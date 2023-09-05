@@ -25,7 +25,7 @@ theme: default
 
 # 1. Crowd Counting
 
-<p style="font-size: 32px;">人群计数，直白的讲就是一种通过计算机计算或估计图像中人数的技术。通过对人群聚集的分析，可以帮助城市管理者、大型活动组织方实时了解人群拥挤情况。例如在疫情期间，就需要通过人群计数，来判断人群的拥挤程度，防止疫情的传播。目前主要有三种方法来解决人群计数问题。</p>
+人群计数，直白的讲就是一种通过计算机计算或估计图像中人数的技术。通过对人群聚集的分析，可以帮助城市管理者、大型活动组织方实时了解人群拥挤情况。例如在疫情期间，就需要通过人群计数，来判断人群的拥挤程度，防止疫情的传播。目前主要有三种方法来解决人群计数问题。
 
 ![bg right height:4in](./image/crowd%20counting%20intro.jpg)
 
@@ -33,7 +33,7 @@ theme: default
 
 ## 1.1. Detection based methods
 
-<p style="font-size: 30px;">这个方法中，使用检测框来框选图像中的每个人，检测框即bounding box，这个要求每个人的轮廓足够清楚，比较适合检测面孔，但是当图片或视频中存在密集的人群时，无法给出令人满意的结果。因为图像中人群非常密集时，每个人的特征就难以区分。</p>
+这个方法中，使用检测框来框选图像中的每个人，检测框即`bounding box`，这个要求每个人的轮廓足够清楚，比较适合检测面孔，但是当图片或视频中存在密集的人群时，无法给出令人满意的结果。因为图像中人群非常密集时，每个人的特征就难以区分。
 
 ![h:3in](./image/detection%20based.jpg)
 
@@ -41,13 +41,13 @@ theme: default
 
 ## 1.2. Regression based methods
 
-<p style="font-size: 30px;">因为基于目标检测的方法在人群很密集的情况下效果不好，因此衍生出了基于回归的方法。但是基于回归的方法是将图像直接映射成具体的人数，听起似乎符合逻辑，但是这种方法所得到的结果无法理解人群的分布，所以并不是最好的方法</p>
+因为基于目标检测的方法在人群很密集的情况下效果不好，因此衍生出了基于回归的方法。但是基于回归的方法是将图像直接映射成具体的人数，听起似乎符合逻辑，但是这种方法所得到的结果无法理解人群的分布，所以并不是最好的方法
 
 ---
 
 ## 1.3. Density estimation based methods with deep learning
 
-<p style="font-size: 30px;">基于密度估计的方法，可以将一个图像映射成一个人群的密度图，并通过密度图再计算出的一个图像的人数。这个方法不仅可以知道人群的密度分布，也知道一个图像中人的数量，再配合深度学习模型，是目前主流的预测人群数量的方法</p>
+基于密度估计的方法，可以将一个图像映射成一个人群的密度图，并通过密度图再计算出的一个图像的人数。这个方法不仅可以知道人群的密度分布，也知道一个图像中人的数量，再配合深度学习模型，是目前主流的预测人群数量的方法
 
 ![](./image/density.p%20based.png)
 
@@ -215,9 +215,17 @@ count = np.sum(density_img)
 
 ### 1.4.9. Dilated convolution
 
-在模型的后端，使用了`Dilated convolution`。这是一种扩散卷积，扩散的幅度`dilation rate`来决定,通过不同`dilation rate`来提取更大范围的特征，优势就是 kernal size 一直是 3x3，使得模型参数的数量不会变化。
+在模型的后端，使用了`Dilated convolution`。这是一种扩散卷积，扩散的幅度`dilation rate`来决定,通过不同`dilation rate`来提取更大范围的特征，优势是
+
+1. kernal size 一直是 3x3，使得模型参数的数量不会变化。
 
 ![h:4in](./image/Dilated%20convolution.png)
+
+---
+
+2. 可以替代 maxpooling+convolution layer，所输出的信息更详细
+
+![](./image/dilation%20advantage.png)
 
 ---
 
@@ -376,6 +384,16 @@ def complie(self):
 ![h:3in](./image/complete%20loss.png)
 
 > I think there is something wrong with this paper and its open-source code. I have already raised some issues on the author's GitHub, and I have also submitted PRs for the issues I found in their code. We will talk later.
+
+---
+
+## 2.7. Conclusion
+
+密度图不仅可以得到鱼群的数量，而且还能从中观察到鱼群的分布情况，但真的是这样吗？
+
+- 鱼群在水中可以在三个方向运动的，因此鱼群的聚集和分散也将是在三个方向上。而照片是二维的，它只能反映两个维度，就是说它不能正确的反应鱼群深度信息。当同样数量和分布的鱼，距离比相机远所生成密度图就会比距离近所生成的密度图要密集得多。
+- 因此当鱼群上游到水的表面，或者养殖的水比较浅时，这时候的密度图才能最有效反应鱼群的分布情况。
+- 还有一篇论文，对网箱离的鱼使用普通相机进行拍摄计数，精度不错，模型是将前两篇论文的模型拼起来。如果加上第三篇论文的 self supervised learning，也许精度会更高。
 
 ---
 
