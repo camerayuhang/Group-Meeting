@@ -325,6 +325,12 @@ def complie(self):
 
 ---
 
+![](./image/output.png)
+
+> 七里山塘
+
+---
+
 # 2. Fish school counting
 
 <!-- footer:  Deep learning with self-supervision and uncertainty regularization to count fish in underwater images-CVPR 2021 -->
