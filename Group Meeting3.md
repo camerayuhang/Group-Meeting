@@ -56,7 +56,7 @@ Two Common ways to define BBOXES:
 
 ## 1.3. Convolution implement of sliding Window
 
-按照上面的那种方法，计算量非常巨大，因为你需要将原图像裁剪成一个个小图像,如果为了不会错过更小的目标，还得需要不同尺寸的bounding box来滑，这样裁剪出来的图像会更多。为了减少计算量，所以要将滑动窗口使用卷机来进行实现。
+按照上面的那种方法，计算量非常巨大，因为你需要将原图像裁剪成一个个小图像,如果为了不会错过更小的目标，还得需要不同尺寸的bounding box来滑，这样裁剪出来的图像会更多。为了减少计算量，所以要将滑动窗口使用卷积来进行实现。
 > a lot of computation
 
 ---
@@ -73,7 +73,7 @@ Two Common ways to define BBOXES:
 
 --- 
 
-即使使用滑动窗口，计算量仍然很大，而且仅一张图像，就需要很多bounding box，bounding box其实并没有目标，这样很多的运算其实都是没有必要的。
+即使使用卷积实现的滑动窗口，计算量仍然很大，而且仅一张图像，就需要很多bounding box，bounding box其实并没有目标，这样很多的运算其实都是没有必要的。
 
 ---
 
@@ -81,7 +81,7 @@ Two Common ways to define BBOXES:
 
 # 2. Regional based networks
 
-后来，学者提出的R-CNN（Regions with CNN）,使用region proposal来代替滑动窗口，这样会使一个图像的bounding box大幅度减少，这属于two stage method，因为region的提出，和分类，是分开成两步来运行的。在R-CNN中使用selective search算法来提出region，可以看到，一个图像在分类前，会先提出2k～个region。这要比滑动窗口的方法要少特别多，且不需要关系bounding box的大小，算法会自己决定。
+后来，学者提出的R-CNN（Regions with CNN）,使用region proposal来代替滑动窗口，这样会使一个图像的bounding box大幅度减少，这属于two stage method，因为region的提出，和分类，是分开成两步来运行的。在R-CNN中使用**selective search**算法来提出region，可以看到，一个图像在分类前，会先提出2k～个region。这要比滑动窗口的方法要少特别多，且不需要关心bounding box的大小，算法会自己决定。
 
 ![h:2.5in](./image/R-CNN.png)
 
@@ -109,8 +109,7 @@ YOLO的全称是You only look once，顾名思义，这个是one stage method，
 
 ![](./image/YOLO%20Detetction%20ssystem.png)
 
-> YOLO要比之前基于密度图的计数要难很多，论文不好理解，代码更不好理解
-> Processing images with YOLO is simple and straightforward.
+> The YOLO algorithm is much more challenging to understand compared to density-based counting methods.
  
 <!--footer: You Only Look Once: Unified, Real-Time Object Detection-CVPR 2016-->
 
@@ -193,7 +192,7 @@ To partially address this, author predict the **square root of the bounding box 
 
 ### 3.3.3. Class loss
 
-这里的class其实是一个含有20个元素的vector，作者仍然使用的是sum-squared error，但是在后续的Yolo中这边换成了entropy loss
+这里的class其实是一个含有20个元素的vector，作者仍然使用的是sum-squared error，但是在后续的Yolo中这边换成了CrossEntropyLoss
 
 ![bg right h:4.5in](./image/yolov1%20loss.png)
 
@@ -219,7 +218,7 @@ YOLOv2又叫YOLO9000，因为他可以区分9000个目标类型。这里主要�
 
 ## 4.1. Improvement
 
-1. High Resolution Classifie: YOLOv2在ImageNet预训练时，将输入从224直接改为448，这样与检测时的输入图像大小一致
+1. High Resolution Classifier: YOLOv2在ImageNet预训练时，将输入从224直接改为448，这样与检测时的输入图像大小一致
 2. Convolutional With Anchor Boxes: 效仿Faster R-CNN，预测bounding box的offset，而不是完整的bounding box。
 
 ---
@@ -296,24 +295,26 @@ recall就是图像中确实有目标，你预测对了几个
 
 ---
 
-## 6.1. Train results
+## 6.2. Train results
 
 
 ![](./image/Yolov8%20training%20results.png)
 
 ---
 
-### 6.1.1. Confusion matrix
+### 6.2.1. Confusion matrix
 
 根据precision和recall可以制作混淆矩阵
+
+![](./image/confusion_matrix.png)
 
 ![bg right h:5in](./image/confusion_matrix_normalized.png)
 
 ---
 
-### 6.1.1. Real-time prediction
+### 6.2.1. Real-time prediction
 
-因为Yolo算法以快著称，所以我们用它预测视频，可以看到预测时，视频每一帧的处理时间只有5.9ms，相对于1s可以处理166张图片，而视频基本上是30fps左右，所以是完全可以胜任的。
+因为Yolo算法以快著称，所以我们用它预测视频，可以看到预测时，视频每一帧的处理时间只有5.9ms，相对于1s可以处理166张图片，就是FPS166，而视频基本上是30fps左右，所以是完全可以胜任的。
 
 ```powershell
 Ultralytics YOLOv8.0.203 🚀 Python-3.11.6 torch-2.1.0 CUDA:0 (NVIDIA GeForce RTX 3060, 12036MiB)
@@ -321,5 +322,8 @@ Model summary (fused): 168 layers, 11127132 parameters, 0 gradients, 28.4 GFLOPs
 
 video 1/1 (2/345) football competition clip.mp4: 480x800 11 players, 1 referee, 5.9ms
 video 1/1 (3/345) football competition clip.mp4: 480x800 9 players, 2 referees, 5.9ms
+video 1/1 (4/345) football competition clip.mp4: 480x800 10 players, 2 referees, 5.9ms
+video 1/1 (5/345) football competition clip.mp4: 480x800 13 players, 2 referees, 5.9ms
+video 1/1 (6/345) football competition clip.mp4: 480x800 14 players, 2 referees, 5.9ms
 ...
 ```
