@@ -263,10 +263,36 @@ scale越往后，被分割的格子越多，越容易识别到更小的目标，
 
 # 6. Football Player Detection Using YOLOv8
 
-目前YOLO模型已经非常成熟，不管精度和速度都已经很高了，最新的模型为YOLOv8。说了那么多，不如实际看一下YOLO的效果如何，我们可以使用YOLOv8模型对自己的数据集进行训练。这里我在网上收集到了足球比赛的数据集，并使用YOLOv8进行训练和预测。
+目前YOLO模型已经非常成熟，不管精度和速度都已经很高了，最新的模型为YOLOv8。说了那么多，不如实际看一下YOLO的效果如何。这里我在网上收集到了足球比赛的数据集，并使用YOLOv8进行训练和预测。
 
-服务器配置为linux，RTX3060，最新版本的torch与cuda，可以看到
+![h:7in bg right](./image/footabll%20player%20dataset.jpg)
 
+---
+
+## 6.1. Mean average precision
+
+precision就是你所输出prediction bounding box中，确实有目标（与target相比IOU大于0.5）的占所有prediction box的比例
+recall就是图像中确实有目标，你预测对了几个
+
+![bg right h:4in](./image/mAP.png)
+
+---
+
+遍历整个数据集的所有目标，例如数据集有3个image，4个object，那么可以先画出PR表
+
+![h:5in](./image/sorted%20mAP.png)
+
+---
+
+![](./image/calculate%20AP.png)
+
+---
+
+![](./image/calculate%20mAP.png)
+
+---
+
+![](./image/mAP%20with%20different%20IOU.png)
 
 ---
 
